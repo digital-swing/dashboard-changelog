@@ -94,6 +94,8 @@ function render_dashboard_widget() {
 			$link = $update->html_url;
 
 			$body .= '<li class="entry">';
+			$description = str_replace("roots/wordpress", "wordpress", $description);
+			$description = str_replace("wpackagist-plugin/", "", $description);
 			$body .= $tr->translate($description);
 			$body .= "<span class=\"version\"><a href=\"$link\">$version</a></span>";
 			$body .= '</li>';
