@@ -8,10 +8,9 @@
 namespace jazzsequence\DashboardChangelog\Widget;
 
 use function jazzsequence\DashboardChangelog\parsedown_enabled;
-use jazzsequence\DashboardChangelog;
 use jazzsequence\DashboardChangelog\API;
-use Parsedown;
 use Stichoza\GoogleTranslate\GoogleTranslate;
+use Parsedown;
 
 /**
  * Initialize the Widget.
@@ -87,21 +86,22 @@ function render_dashboard_widget() {
 				continue;
 			}
 
-			$title = $update->name;
 			$version = $update->tag_name;
 			// If we have Parsedown, use it. Otherwise just use wpautop for basic parsing.
 			$description = parsedown_enabled() ? $parsedown->text( $update->body ) : wpautop( $update->body );
+			$tr = new GoogleTranslate();
+			$tr->setSource('en');
+			$tr->setTarget(get_locale());
+			# Do not translate if description exceeds google translate 5000 characters limit
+			$translated_desc = strlen($description) > 5000 ? $description : $tr->translate($description);
+
+
 			$link = $update->html_url;
 
 			$body .= '<li class="entry">';
-			$body .= "<h3>$title</h3>";
-			if ( DashboardChangelog\should_translate() ) {
-				$tr = new GoogleTranslate( get_locale() );
-				$tr->setSource();
-				$body .= $tr->translate( $description );
-			} else {
-				$body .= $description;
-			}
+			$description = str_replace("roots/wordpress", "wordpress", $description);
+			$description = str_replace("wpackagist-plugin/", "", $description);
+			$body .= $translated_desc;
 			$body .= "<span class=\"version\"><a href=\"$link\">$version</a></span>";
 			$body .= '</li>';
 
