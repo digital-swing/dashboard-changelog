@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.1](https://github.com/digital-swing/dashboard-changelog/compare/v0.2.0...v0.2.1) (2026-03-04)
+
+
+### Fixes
+
+* Add .nvmrc ([b2504f5](https://github.com/digital-swing/dashboard-changelog/commit/b2504f559c74b5d855654cfe3ecb32b693de2fe0))
+
 ## [0.2.0](https://github.com/digital-swing/dashboard-changelog/compare/v0.1.0...v0.2.0) (2026-03-04)
 
 
