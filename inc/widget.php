@@ -83,7 +83,7 @@ function render_dashboard_widget() {
 		return;
 	}
 
-	$body = '<ul>';
+	$body = '<div id="changelog-accordion">';
 	$i = 0;
 
 	/**
@@ -100,9 +100,12 @@ function render_dashboard_widget() {
 				continue;
 			}
 
-			$version = $update->tag_name;
+			$body_lines = explode( "\n", $update->body, 2 );
+			$version = trim( preg_replace( '/^#+\s*/', '', $body_lines[0] ) );
+			$version_html = parsedown_enabled() ? $parsedown->line( $version ) : wp_kses_post( $version );
+			$body_content = isset( $body_lines[1] ) ? ltrim( $body_lines[1] ) : '';
 			// If we have Parsedown, use it. Otherwise just use wpautop for basic parsing.
-			$description = parsedown_enabled() ? $parsedown->text( $update->body ) : wpautop( $update->body );
+			$description = parsedown_enabled() ? $parsedown->text( $body_content ) : wpautop( $body_content );
 			$tr = new GoogleTranslate();
 			$tr->setSource('en');
 			$tr->setTarget(get_locale());
@@ -112,18 +115,19 @@ function render_dashboard_widget() {
 
 			$link = $update->html_url;
 
-			$body .= '<li class="entry">';
 			$description = str_replace("roots/wordpress", "wordpress", $description);
 			$description = str_replace("wpackagist-plugin/", "", $description);
+			$body .= '<h3 class="entry-header">' . wp_kses( $version_html, [ 'strong' => [], 'em' => [], 'code' => [] ] ) . '</h3>';
+			$body .= '<div class="entry">';
 			$body .= $translated_desc;
-			$body .= "<span class=\"version\"><a href=\"$link\">$version</a></span>";
-			$body .= '</li>';
+			$body .= '<span class="version"><a target="_blank" href="' . esc_url( $link ) . '">' . wp_kses_post( $version_html ) . '</a></span>';
+			$body .= '</div>';
 
 			$i++;
 		}
 	}
 
-	$body .= '</ul>';
+	$body .= '</div>';
 
 	echo wp_kses_post( $body );
 }
