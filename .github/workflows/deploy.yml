@@ -1,0 +1,124 @@
+name: Deploy
+
+on:
+  release:
+    types: [created]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Tag à déployer (laisser vide pour utiliser le plus récent)"
+        required: false
+        default: ""
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # nécessaire pour récupérer tous les tags
+
+      - name: Déterminer le tag
+        id: get_tag
+        run: |
+          if [ "${{ github.event_name }}" = "release" ]; then
+            TAG="${{ github.event.release.tag_name }}"
+          elif [ -n "${{ github.event.inputs.tag }}" ]; then
+            TAG="${{ github.event.inputs.tag }}"
+            if ! git ls-remote --tags origin | grep -q "refs/tags/$TAG$"; then
+              echo "❌ Le tag $TAG n'existe pas dans le repo."
+              exit 1
+            fi
+          else
+            TAG=$(gh release list --limit 1 --json tagName --jq '.[0].tagName')
+          fi
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_TOKEN }}
+
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.get_tag.outputs.tag }}
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.2"
+          tools: composer:v2, php-scoper
+
+      - uses: ramsey/composer-install@v2
+        with:
+          composer-options: "--no-dev --ignore-platform-reqs --optimize-autoloader --no-progress --prefer-dist"
+
+      - name: Install wp-phpscoper in isolation
+        run: |
+          mkdir -p tools/wp-phpscoper
+          composer require sematico/wp-phpscoper --working-dir=tools/wp-phpscoper --no-interaction
+
+      - name: Run php-scoper
+        run: php-scoper add-prefix --config scoper.inc.php --output-dir build
+
+      - name: Dump optimized autoload
+        working-directory: build
+        run: composer dump-autoload -o
+
+      - uses: pnpm/action-setup@v4
+        name: Install pnpm
+        id: pnpm-install
+        with:
+          run_install: false
+
+      - name: Use Node.js 22
+        uses: actions/setup-node@v5
+        with:
+          node-version-file: ".nvmrc"
+
+      - run: pnpm install --frozen-lockfile
+        working-directory: build
+      - run: pnpm turbo run build --team="dashboard-changelog"
+        env:
+          TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
+          TURBO_API: ${{ secrets.TURBO_API }}
+        working-directory: build
+      - run: pnpm plugin-zip
+        working-directory: build
+
+      - name: Upload artifacts to nextcloud
+        working-directory: build
+        run: |
+          curl -u $nextcloud_username:$nextcloud_password -X MKCOL "$nextcloud_url/remote.php/dav/files/$nextcloud_username/dashboard-changelog/${{ steps.get_tag.outputs.tag }}"
+          curl -u $nextcloud_username:$nextcloud_password -T dashboard-changelog.zip "$nextcloud_url/remote.php/dav/files/$nextcloud_username/dashboard-changelog/${{ steps.get_tag.outputs.tag }}/dashboard-changelog.zip"
+        env:
+          nextcloud_url: "https://cloud.digital-swing.com"
+          nextcloud_username: ${{ secrets.NEXTCLOUD_USERNAME }}
+          nextcloud_password: ${{ secrets.NEXTCLOUD_PASSWORD }}
+
+      - name: Upload release asset
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.get_tag.outputs.tag }}
+          files: |
+            build/dashboard-changelog.zip
+          token: ${{ github.token }}
+
+      - name: Upload to satispress
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.SATISPRESS_HOST }}
+          username: ${{ secrets.SATISPRESS_USER }}
+          key: ${{ secrets.SATISPRESS_KEY }}
+          passphrase: ${{ secrets.SATISPRESS_PASSPHRASE }}
+          source: "build/dashboard-changelog.zip"
+          target: "/tmp"
+          strip_components: 1
+          overwrite: true
+
+      - name: executing remote ssh commands using password
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SATISPRESS_HOST }}
+          username: ${{ secrets.SATISPRESS_USER }}
+          key: ${{ secrets.SATISPRESS_KEY }}
+          passphrase: ${{ secrets.SATISPRESS_PASSPHRASE }}
+          script: wp plugin install --force /tmp/dashboard-changelog.zip --path="/srv/www/satis/current/web/wp"
+          debug: true

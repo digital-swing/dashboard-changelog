@@ -3,7 +3,9 @@
  * Plugin Name: Dashboard Changelog
  * Plugin URI: https://jazzsequence.com
  * Description: Adds a GitHub release widget to your WordPress dashboard for a public GitHub repository.
- * Version: 1.0
+ * x-release-please-start-version
+ * Version: 0.0.1
+ * x-release-please-end
  * Author: Chris Reynolds
  * Author URI: https://github.com/jazzsequence
  * License: GPLv3
