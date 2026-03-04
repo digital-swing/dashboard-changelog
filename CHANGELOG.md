@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.2](https://github.com/digital-swing/dashboard-changelog/compare/v0.2.1...v0.2.2) (2026-03-04)
+
+
+### Fixes
+
+* Rename plugin main file ([8e50025](https://github.com/digital-swing/dashboard-changelog/commit/8e500256adde21851d23d4ad86b8d6e113f22302))
+
 ## [0.2.1](https://github.com/digital-swing/dashboard-changelog/compare/v0.2.0...v0.2.1) (2026-03-04)
 
 
