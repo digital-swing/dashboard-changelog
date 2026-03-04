@@ -56,10 +56,10 @@ jobs:
           composer require sematico/wp-phpscoper --working-dir=tools/wp-phpscoper --no-interaction
 
       - name: Run php-scoper
-        run: php-scoper add-prefix --config scoper.inc.php --output-dir build
+        run: php-scoper add-prefix --config scoper.inc.php --output-dir scoped
 
       - name: Dump optimized autoload
-        working-directory: build
+        working-directory: scoped
         run: composer dump-autoload -o
 
       - uses: pnpm/action-setup@v4
@@ -74,17 +74,17 @@ jobs:
           node-version-file: ".nvmrc"
 
       - run: pnpm install --frozen-lockfile
-        working-directory: build
+        working-directory: scoped
       - run: pnpm turbo run build --team="dashboard-changelog"
         env:
           TURBO_TOKEN: ${{ secrets.TURBO_TOKEN }}
           TURBO_API: ${{ secrets.TURBO_API }}
-        working-directory: build
+        working-directory: scoped
       - run: pnpm plugin-zip
-        working-directory: build
+        working-directory: scoped
 
       - name: Upload artifacts to nextcloud
-        working-directory: build
+        working-directory: scoped
         run: |
           curl -u $nextcloud_username:$nextcloud_password -X MKCOL "$nextcloud_url/remote.php/dav/files/$nextcloud_username/dashboard-changelog/${{ steps.get_tag.outputs.tag }}"
           curl -u $nextcloud_username:$nextcloud_password -T dashboard-changelog.zip "$nextcloud_url/remote.php/dav/files/$nextcloud_username/dashboard-changelog/${{ steps.get_tag.outputs.tag }}/dashboard-changelog.zip"
@@ -98,7 +98,7 @@ jobs:
         with:
           tag_name: ${{ steps.get_tag.outputs.tag }}
           files: |
-            build/dashboard-changelog.zip
+            scoped/dashboard-changelog.zip
           token: ${{ github.token }}
 
       - name: Upload to satispress
