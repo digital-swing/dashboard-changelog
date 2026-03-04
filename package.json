@@ -1,6 +1,6 @@
 {
   "name": "dashboard-changelog",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Adds a GitHub release widget to your WordPress dashboard for a public GitHub repository.",
   "files": [
     "build/*",
