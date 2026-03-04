@@ -107,8 +107,7 @@ jobs:
           host: ${{ secrets.SATISPRESS_HOST }}
           username: ${{ secrets.SATISPRESS_USER }}
           key: ${{ secrets.SATISPRESS_KEY }}
-          passphrase: ${{ secrets.SATISPRESS_PASSPHRASE }}
-          source: "build/dashboard-changelog.zip"
+          source: "scoped/dashboard-changelog.zip"
           target: "/tmp"
           strip_components: 1
           overwrite: true
@@ -119,6 +118,5 @@ jobs:
           host: ${{ secrets.SATISPRESS_HOST }}
           username: ${{ secrets.SATISPRESS_USER }}
           key: ${{ secrets.SATISPRESS_KEY }}
-          passphrase: ${{ secrets.SATISPRESS_PASSPHRASE }}
           script: wp plugin install --force /tmp/dashboard-changelog.zip --path="/srv/www/satis/current/web/wp"
           debug: true
