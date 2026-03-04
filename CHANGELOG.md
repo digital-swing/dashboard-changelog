@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.3](https://github.com/digital-swing/dashboard-changelog/compare/v0.2.2...v0.2.3) (2026-03-04)
+
+
+### Fixes
+
+* Fix version in plugin file ([a0f474b](https://github.com/digital-swing/dashboard-changelog/commit/a0f474b3da54860b19bc6e8cad08d5ec214dd11f))
+
 ## [0.2.2](https://github.com/digital-swing/dashboard-changelog/compare/v0.2.1...v0.2.2) (2026-03-04)
 
 
