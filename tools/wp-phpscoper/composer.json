@@ -1,0 +1,5 @@
+{
+    "require": {
+        "sematico/wp-phpscoper": "^0.1.0"
+    }
+}
