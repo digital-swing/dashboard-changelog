@@ -2,7 +2,12 @@
   "name": "dashboard-changelog",
   "version": "0.2.1",
   "description": "Adds a GitHub release widget to your WordPress dashboard for a public GitHub repository.",
-  "main": "plugin.php",
+  "files": [
+    "build/*",
+    "inc/*",
+    "dashboard-changelog.php",
+    "vendor/*"
+  ],
   "scripts": {
     "start": "wp-scripts start",
     "build": "wp-scripts build --source-path=src"
