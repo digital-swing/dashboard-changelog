@@ -3,3 +3,6 @@
 /wordpress/
 
 .phpunit.result.cache
+.history
+build
+.turbo

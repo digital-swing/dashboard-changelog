@@ -31,7 +31,21 @@ function enqueue_styles( string $pagenow ) {
 		return;
 	}
 
-	wp_enqueue_style( 'dashboard-changelog', plugin_dir_url( dirname( __FILE__ ) ) . 'dist/css/style.css', [], '1.0.0', 'screen' );
+	$asset_file = include plugin_dir_path(__FILE__) . 'build/style.scss.asset.php';
+
+	wp_enqueue_script(
+		'dashboard-changelog',
+        plugin_dir_url(__FILE__) . 'build/style-style.scss.css',
+        $asset_file['dependencies'],
+        $asset_file['version']
+	);
+
+	wp_enqueue_script( 'jquery-ui-accordion' );
+
+	wp_add_inline_script(
+		'jquery-ui-accordion',
+		'jQuery(function($){ $("#changelog-accordion").accordion({ active: 0, collapsible: true, heightStyle: "content" }); });'
+	);
 }
 
 /**
