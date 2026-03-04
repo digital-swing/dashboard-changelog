@@ -4,7 +4,7 @@
  * Plugin URI: https://jazzsequence.com
  * Description: Adds a GitHub release widget to your WordPress dashboard for a public GitHub repository.
  * x-release-please-start-version
- * Version: 0.0.1
+ * Version: 0.2.2
  * x-release-please-end
  * Author: Chris Reynolds
  * Author URI: https://github.com/jazzsequence
