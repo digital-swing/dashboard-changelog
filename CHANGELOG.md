@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.2.4](https://github.com/digital-swing/dashboard-changelog/compare/v0.2.3...v0.2.4) (2026-03-12)
+
+
+### Fixes
+
+* Handle translation errors gracefully in dashboard widget ([dc15af0](https://github.com/digital-swing/dashboard-changelog/commit/dc15af0e9c222aa62146c9a4b79521c65ee0bc02))
+
 ## [0.2.3](https://github.com/digital-swing/dashboard-changelog/compare/v0.2.2...v0.2.3) (2026-03-04)
 
 
