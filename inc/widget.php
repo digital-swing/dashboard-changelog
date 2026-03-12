@@ -110,7 +110,11 @@ function render_dashboard_widget() {
 			$tr->setSource('en');
 			$tr->setTarget(get_locale());
 			# Do not translate if description exceeds google translate 5000 characters limit
-			$translated_desc = strlen($description) > 5000 ? $description : $tr->translate($description);
+			try {
+				$translated_desc = strlen($description) > 5000 ? $description : $tr->translate($description);
+			} catch (\Exception $e) {
+				$translated_desc = $description;
+			}
 
 
 			$link = $update->html_url;
